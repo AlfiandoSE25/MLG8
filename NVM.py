@@ -1,11 +1,7 @@
-# ============================================
 # DATING APP MATCH OUTCOME PREDICTION PROJECT
 # K-NEAREST NEIGHBORS (KNN) VERSION
-# ============================================
 
-# ======================
 # IMPORT LIBRARIES
-# ======================
 
 import pandas as pd
 import numpy as np
@@ -24,9 +20,7 @@ from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
 
 
-# ======================
 # LOAD DATASET
-# ======================
 
 df = pd.read_csv('dating_app_behavior_dataset.csv')
 
@@ -34,24 +28,18 @@ print("FIRST 5 ROWS")
 print(df.head())
 
 
-# ======================
 # CHECK MISSING VALUES
-# ======================
 
 print("\nMISSING VALUES")
 print(df.isnull().sum())
 
 
-# ======================
 # REMOVE MISSING VALUES
-# ======================
 
 df = df.dropna()
 
 
-# ======================
 # FEATURE ENGINEERING
-# ======================
 
 # Engagement score
 df['engagement_score'] = (
@@ -67,16 +55,12 @@ df['profile_quality'] = (
 )
 
 
-# ======================
 # DEFINE TARGET
-# ======================
 
 y = df['match_outcome']
 
 
-# ======================
 # FEATURE SELECTION
-# ======================
 
 # Remove weak / redundant columns
 X = df.drop([
@@ -87,25 +71,19 @@ X = df.drop([
 ], axis=1)
 
 
-# ======================
 # ONE HOT ENCODING
-# ======================
 
 X = pd.get_dummies(X)
 
 
-# ======================
 # ENCODE TARGET LABEL
-# ======================
 
 le = LabelEncoder()
 
 y = le.fit_transform(y)
 
 
-# ======================
 # TRAIN TEST SPLIT
-# ======================
 
 X_train, X_test, y_train, y_test = train_test_split(
     X,
@@ -116,9 +94,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 
-# ======================
 # FEATURE SCALING
-# ======================
 
 # VERY IMPORTANT FOR KNN
 
@@ -128,9 +104,7 @@ X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
 
 
-# ======================
 # CREATE KNN MODEL
-# ======================
 
 knn = KNeighborsClassifier(
     n_neighbors=15,
@@ -139,23 +113,17 @@ knn = KNeighborsClassifier(
 )
 
 
-# ======================
 # TRAIN MODEL
-# ======================
 
 knn.fit(X_train, y_train)
 
 
-# ======================
 # MAKE PREDICTIONS
-# ======================
 
 y_pred = knn.predict(X_test)
 
 
-# ======================
 # EVALUATE MODEL
-# ======================
 
 print("\nKNN ACCURACY")
 print(accuracy_score(y_test, y_pred))
@@ -169,9 +137,7 @@ print("\nCONFUSION MATRIX")
 print(confusion_matrix(y_test, y_pred))
 
 
-# ======================
 # TEST DIFFERENT K VALUES
-# ======================
 
 print("\nTESTING DIFFERENT K VALUES")
 
@@ -191,9 +157,7 @@ for k in range(1, 21):
     print(f"K = {k} | Accuracy = {accuracy}")
 
 
-# ======================
 # OPTIONAL VISUALIZATION
-# ======================
 
 k_values = []
 accuracies = []
