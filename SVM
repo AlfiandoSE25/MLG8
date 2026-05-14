@@ -1,0 +1,44 @@
+# Model 2: Support Vector Machine（SVM）
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+from sklearn.svm import SVC
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Standardize the data
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# Initialize and train the SVM model
+svm_model = SVC(kernel='rbf', C=1.0, random_state=42)
+svm_model.fit(X_train_scaled, y_train)
+
+# 3. Make predictions on the test set,.
+svm_predictions = svm_model.predict(X_test_scaled)
+
+# 4. Evaluate model performance
+svm_accuracy = accuracy_score(y_test, svm_predictions)
+print(f"Accuracy with SVM: {svm_accuracy:.4f}")
+
+print("\nClassification Report (SVM):\n")
+# Assuming 'le' is your LabelEncoder from earlier steps
+print(classification_report(y_test, svm_predictions, target_names=le.classes_))
+
+# 5. Plot the Confusion Matrix
+cm_svm = confusion_matrix(y_test, svm_predictions)
+plt.figure(figsize=(8, 6))
+sns.heatmap(
+    cm_svm,
+    annot=True,
+    fmt="d",
+    xticklabels=le.classes_,
+    yticklabels=le.classes_,
+    cmap='Blues'
+)
+plt.xlabel("Predicted Label")
+plt.ylabel("True Label")
+plt.title("Confusion Matrix - SVM")
+plt.show()
