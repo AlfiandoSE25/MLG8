@@ -76,6 +76,7 @@ rf_predictions = rf_model.predict(X_test)
 y_pred = rf_model.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred)
 
+print(f"Random Forest Accuracy: {accuracy:.4f}")
 print(f"Accuracy with Top 9 Features: {accuracy:.4f}")
 print("\nClassification Report:\n")
 print(classification_report(y_test, y_pred, target_names=le.classes_))
