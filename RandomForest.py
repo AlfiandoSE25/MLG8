@@ -7,6 +7,7 @@ import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from sklearn.ensemble import RandomForestClassifier
+from flaml import AutoML
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 
 # STEP 2: DATA LOADING
@@ -72,7 +73,7 @@ y_encoded = le.fit_transform(y)
 # Partition dataset arrays: 80% assigned for training, 20% reserved for validation testing
 X_train, X_test, y_train, y_test = train_test_split(X, y_encoded, test_size=0.2, random_state=42)
 
-# STEP 9: MODEL TRAINING (RANDOM FOREST)
+# STEP 9A: MODEL TRAINING (RANDOM FOREST)
 # Construct the Random Forest model with constraints to avoid overfitting
 rf_model = RandomForestClassifier(
     n_estimators=200,
@@ -84,6 +85,25 @@ rf_model = RandomForestClassifier(
 
 # Train the model to learn statistical patterns
 rf_model.fit(X_train, y_train)
+# STEP 9B: MODEL TRAINING (FLAML AutoML)
+
+automl = AutoML()
+
+settings = {
+    "time_budget": 60,      # search for best model for 60 seconds
+    "metric": "accuracy",
+    "task": "classification",
+    "seed": 42
+}
+
+automl.fit(
+    X_train=X_train,
+    y_train=y_train,
+    **settings
+)
+
+print("\n=== FLAML BEST MODEL ===")
+print(automl.model)
 
 # STEP 10: PREDICTION & RESULTS VISUALIZATION
 # A. Generate target class predictions on the unseen testing partition
@@ -117,3 +137,30 @@ plt.xlabel("Predicted Labels", fontsize=10)
 plt.ylabel("Actual Labels", fontsize=10)
 plt.tight_layout()
 plt.show()
+# STEP 11: FLAML PREDICTION & EVALUATION
+
+y_pred_flaml = automl.predict(X_test)
+
+accuracy_flaml = accuracy_score(y_test, y_pred_flaml)
+
+print("\n=========================================")
+print(f"🚀 FLAML ACCURACY: {accuracy_flaml*100:.2f}%")
+print("=========================================\n")
+
+print("=== FLAML CLASSIFICATION REPORT ===")
+print(classification_report(
+    y_test,
+    y_pred_flaml,
+    target_names=le.classes_
+))
+
+print("\n========== MODEL COMPARISON ==========")
+print(f"Random Forest Accuracy : {accuracy*100:.2f}%")
+print(f"FLAML Accuracy         : {accuracy_flaml*100:.2f}%")
+
+if accuracy_flaml > accuracy:
+    print("🏆 FLAML performed better.")
+elif accuracy_flaml < accuracy:
+    print("🏆 Random Forest performed better.")
+else:
+    print("🤝 Both models performed equally.")
